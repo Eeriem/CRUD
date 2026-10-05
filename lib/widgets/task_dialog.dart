@@ -31,9 +31,15 @@ class _TaskDialogState extends State<TaskDialog> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
-    _descriptionController = TextEditingController(text: widget.task?.description ?? '');
-    _categoryController = TextEditingController(text: widget.task?.category ?? '');
-    _priorityController = TextEditingController(text: widget.task?.priority ?? '');
+    _descriptionController = TextEditingController(
+      text: widget.task?.description ?? '',
+    );
+    _categoryController = TextEditingController(
+      text: widget.task?.category ?? '',
+    );
+    _priorityController = TextEditingController(
+      text: widget.task?.priority ?? '',
+    );
     _statusController = TextEditingController(text: widget.task?.status ?? '');
     _notesController = TextEditingController(text: widget.task?.notes ?? '');
     _tagsController = TextEditingController(text: widget.task?.tags ?? '');
@@ -88,131 +94,167 @@ class _TaskDialogState extends State<TaskDialog> {
     }
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    int maxLines = 1,
+    bool isRequired = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        prefixIcon: Icon(icon, size: 20),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+      ),
+      validator: isRequired
+          ? (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Required';
+              }
+              return null;
+            }
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(isEditing ? 'Edit Task' : 'Add New Task'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 1. Title
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: '1. Title',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.title),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Title cannot be empty';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-
-              // 2. Description
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: '2. Description',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
-                ),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 12),
-
-              // 3. Category
-              TextFormField(
-                controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: '3. Category',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 4. Priority
-              TextFormField(
-                controller: _priorityController,
-                decoration: const InputDecoration(
-                  labelText: '4. Priority (High / Medium / Low)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.priority_high),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 5. Status
-              TextFormField(
-                controller: _statusController,
-                decoration: const InputDecoration(
-                  labelText: '5. Status (Pending / Done)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.check_circle_outline),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 6. Notes
-              TextFormField(
-                controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: '6. Notes',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.notes),
-                ),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 12),
-
-              // 7. Tags
-              TextFormField(
-                controller: _tagsController,
-                decoration: const InputDecoration(
-                  labelText: '7. Tags',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.tag),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Date Picker
-              InkWell(
-                onTap: _pickDate,
-                borderRadius: BorderRadius.circular(8),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Due Date',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.calendar_today),
-                  ),
-                  child: Text(
-                    DateFormat('MMM dd, yyyy').format(_selectedDate),
-                    style: const TextStyle(fontSize: 16),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        width: 380, // ← makes it more rectangular / wider
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isEditing ? 'Edit Task' : 'Add New Task',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+
+                _buildTextField(
+                  controller: _titleController,
+                  label: '1. Title',
+                  icon: Icons.title,
+                  isRequired: true,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _descriptionController,
+                  label: '2. Description',
+                  icon: Icons.description,
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _categoryController,
+                  label: '3. Category',
+                  icon: Icons.category,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _priorityController,
+                  label: '4. Priority',
+                  icon: Icons.priority_high,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _statusController,
+                  label: '5. Status',
+                  icon: Icons.check_circle_outline,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _notesController,
+                  label: '6. Notes',
+                  icon: Icons.notes,
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 14),
+
+                _buildTextField(
+                  controller: _tagsController,
+                  label: '7. Tags',
+                  icon: Icons.tag,
+                ),
+                const SizedBox(height: 14),
+
+                // Due Date
+                InkWell(
+                  onTap: _pickDate,
+                  borderRadius: BorderRadius.circular(12),
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'Due Date',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      prefixIcon: const Icon(Icons.calendar_today, size: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                    child: Text(
+                      DateFormat('MMM dd, yyyy').format(_selectedDate),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF48FB1),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                      ),
+                      onPressed: _saveTask,
+                      child: Text(isEditing ? 'Update' : 'Save'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _saveTask,
-          child: Text(isEditing ? 'Update' : 'Save'),
-        ),
-      ],
     );
   }
 }

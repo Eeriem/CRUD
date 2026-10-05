@@ -15,6 +15,11 @@ class TaskTile extends StatelessWidget {
     required this.onEdit,
   });
 
+  void _toggleCompleted(bool? value) {
+    task.isCompleted = value ?? false;
+    task.save(); // automatically updates Hive
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dismissible(
@@ -25,8 +30,8 @@ class TaskTile extends StatelessWidget {
         padding: const EdgeInsets.only(right: 20),
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
+          color: Colors.redAccent,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(Icons.delete, color: Colors.white, size: 28),
       ),
@@ -61,46 +66,42 @@ class TaskTile extends StatelessWidget {
       },
       child: Card(
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Leading Icon
-              CircleAvatar(
-                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: Icon(
-                  Icons.check_circle_outline,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              // Interactive Checkbox
+              Checkbox(
+                value: task.isCompleted,
+                activeColor: const Color(0xFFF48FB1),
+                onChanged: _toggleCompleted,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 4),
 
               // Content
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
+                    // Title with strikethrough when completed
                     Text(
                       task.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 17,
+                        decoration: task.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color: task.isCompleted ? Colors.grey : null,
                       ),
                     ),
                     const SizedBox(height: 4),
-
-                    // Date
                     Text(
                       DateFormat('EEEE, MMM dd, yyyy').format(task.date),
                       style: TextStyle(color: Colors.grey[600], fontSize: 13),
                     ),
                     const SizedBox(height: 6),
-
-                    // Other fields
                     if (task.description.isNotEmpty)
                       _infoText('Description', task.description),
                     if (task.category.isNotEmpty)
@@ -119,9 +120,8 @@ class TaskTile extends StatelessWidget {
 
               // Edit button
               IconButton(
-                icon: const Icon(Icons.edit_outlined),
+                icon: Icon(Icons.edit_outlined, color: Colors.pink[400]),
                 onPressed: onEdit,
-                tooltip: 'Edit',
               ),
             ],
           ),
@@ -139,8 +139,8 @@ class TaskTile extends StatelessWidget {
             TextSpan(
               text: '$label: ',
               style: TextStyle(
-                color: Colors.grey[700],
-                fontWeight: FontWeight.w500,
+                color: Colors.pink[700],
+                fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
             ),

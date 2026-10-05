@@ -28,13 +28,33 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1565C0),
+          seedColor: const Color(0xFFF8BBD9), // Pastel Pink
           brightness: Brightness.light,
+          primary: const Color(0xFFF48FB1),
+          secondary: const Color(0xFFFCE4EC),
+          surface: const Color(0xFFFFF5F8),
         ),
         useMaterial3: true,
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 2),
+        scaffoldBackgroundColor: const Color(0xFFFFF5F8),
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Color(0xFFF48FB1),
+          foregroundColor: Colors.white,
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xFFF48FB1),
+          foregroundColor: Colors.white,
+        ),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
       ),
       home: const HomeScreen(),
-    );
+    );  
   }
 }

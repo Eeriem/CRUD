@@ -28,6 +28,9 @@ class Task extends HiveObject {
   @HiveField(7)
   String tags;
 
+  @HiveField(8)                     // ← new field
+  bool isCompleted;
+
   Task({
     required this.title,
     required this.date,
@@ -37,5 +40,6 @@ class Task extends HiveObject {
     this.status = '',
     this.notes = '',
     this.tags = '',
+    this.isCompleted = false,        // ← default false
   });
 }
