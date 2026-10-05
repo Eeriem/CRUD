@@ -51,7 +51,6 @@ class TaskTile extends StatelessWidget {
         );
       },
       onDismissed: (direction) {
-        // DELETE
         Hive.box<Task>('taskBox').deleteAt(index);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -64,28 +63,95 @@ class TaskTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         elevation: 2,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(
-              Icons.check_circle_outline,
-              color: Theme.of(context).colorScheme.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Leading Icon
+              CircleAvatar(
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: Icon(
+                  Icons.check_circle_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      task.title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Date
+                    Text(
+                      DateFormat('EEEE, MMM dd, yyyy').format(task.date),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 13),
+                    ),
+                    const SizedBox(height: 6),
+
+                    // Other fields
+                    if (task.description.isNotEmpty)
+                      _infoText('Description', task.description),
+                    if (task.category.isNotEmpty)
+                      _infoText('Category', task.category),
+                    if (task.priority.isNotEmpty)
+                      _infoText('Priority', task.priority),
+                    if (task.status.isNotEmpty)
+                      _infoText('Status', task.status),
+                    if (task.notes.isNotEmpty)
+                      _infoText('Notes', task.notes),
+                    if (task.tags.isNotEmpty)
+                      _infoText('Tags', task.tags),
+                  ],
+                ),
+              ),
+
+              // Edit button
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: onEdit,
+                tooltip: 'Edit',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _infoText(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: TextStyle(
+                color: Colors.grey[700],
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
             ),
-          ),
-          title: Text(
-            task.title,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-          ),
-          subtitle: Text(
-            DateFormat('EEEE, MMM dd, yyyy').format(task.date),
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: onEdit,
-            tooltip: 'Edit',
-          ),
+            TextSpan(
+              text: value,
+              style: TextStyle(
+                color: Colors.grey[800],
+                fontSize: 13,
+              ),
+            ),
+          ],
         ),
       ),
     );
